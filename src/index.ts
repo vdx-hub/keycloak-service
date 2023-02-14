@@ -1,9 +1,8 @@
-import 'module-alias/register'
 import bodyParser from 'body-parser';
 import https from 'https';
 import express from 'express';
 
-import ImportXLSXRouter from "@routes/importXlsx";
+import KeycloakRouter from "@routes/keycloak";
 
 
 https.globalAgent.options.rejectUnauthorized = false;
@@ -26,7 +25,7 @@ app.use((err: any, _req: any, res: any, _next: any) => {
     error: err,
   });
 });
-app.use('/importXLSX', ImportXLSXRouter)
+app.use('/keycloak', KeycloakRouter)
 app.listen(9000, async () => {
-  console.log("Server is up!");
+  console.log("Server is up in http://127.0.0.1:9000");
 })
