@@ -1,9 +1,14 @@
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import * as dotenv from 'dotenv'
+import https from 'https'
 dotenv.config()
 const kcAdminClient = new KcAdminClient({
-  baseUrl: process.env.KEYCLOAK_HOST,
+  // baseUrl: process.env.KEYCLOAK_HOST,
+  baseUrl: "https://sso.ceid.gov.vn/auth",
   realmName: 'sso-ceid',
+  requestConfig: {
+    httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+  }
 });
 
 await kcAdminClient.auth({

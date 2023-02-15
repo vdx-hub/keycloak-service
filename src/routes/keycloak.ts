@@ -49,7 +49,6 @@ router.post('/send-email', async function (req, res) {
     clientId: 'sso-ceid',
     redirectUri: 'http://abc.com'
   }).then((res) => {
-    console.log(res);
     return {
       status: 200,
       // id: res?.id,
@@ -80,7 +79,6 @@ router.post('/reset-password', async function (req, res) {
     actions: ["UPDATE_PASSWORD"],
     redirectUri: 'https://quantridulieu.ceid.gov.vn/#/web/csdl_mt/trang_chu'
   }).then((res) => {
-    console.log(res);
     return {
       status: 200,
       // id: res?.id,

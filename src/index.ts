@@ -27,5 +27,5 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 });
 app.use('/keycloak', KeycloakRouter)
 app.listen(9000, async () => {
-  console.log("Server is up in http://127.0.0.1:9000");
+  console.log("Server is up in http://0.0.0.0:9000");
 })
