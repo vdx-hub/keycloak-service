@@ -1,5 +1,5 @@
-import { createReadStream, pathExists } from 'fs-extra';
-import { object as convertToObject } from 'dot-object'
+import fs from 'fs-extra';
+import dotobject from 'dot-object'
 import { DeleteResult, InsertOneResult, UpdateResult, WithId, Document, ObjectId, MongoClient, FindCursor, FindOptions, GridFSBucket } from 'mongodb';
 interface mongoCollectionInfo {
   dbName: string;
@@ -10,13 +10,13 @@ interface mongoCollectionInfo {
 function addMetadataCreate(data: Object): any {
   let now = new Date().getTime();
   let metadata = { createdAt: now, modifiedAt: now };
-  return convertToObject({ ...data, ...metadata });
+  return dotobject.object({ ...data, ...metadata });
 }
 
 function addMetadataUpdate(data: Object): any {
   let now = new Date().getTime();
   let metadata = { modifiedAt: now };
-  return convertToObject({ ...data, ...metadata });
+  return dotobject.object({ ...data, ...metadata });
 }
 
 async function createOne(client: MongoClient, { dbName, collectionName }: mongoCollectionInfo, data: object): Promise<InsertOneResult> {
@@ -40,13 +40,7 @@ async function updateById(client: MongoClient, { dbName, collectionName, filterI
   return await client
     .db(dbName)
     .collection(collectionName)
-    .updateOne({ _id: new ObjectId(filterId) }, addMetadataUpdate(updateData));
-}
-async function findOne(client: MongoClient, { dbName, collectionName }: mongoCollectionInfo, filter: object): Promise<WithId<Document> | null> {
-  return await client.db(dbName).collection(collectionName).findOne(filter);
-}
-async function findMany(client: MongoClient, { dbName, collectionName }: mongoCollectionInfo, filter: object, option: FindOptions): Promise<FindCursor<WithId<Document> | null>> {
-  return await client.db(dbName).collection(collectionName).find(filter, option)
+    .updateOne({ _id: new ObjectId(filterId) }, { $set: addMetadataUpdate(updateData) });
 }
 async function findOneById(client: MongoClient, { dbName, collectionName, filterId }: mongoCollectionInfo): Promise<WithId<Document> | null> {
   return await client
@@ -73,8 +67,8 @@ async function uploadExpressFile(client: MongoClient, bucket: string, fileName: 
     bucketName: bucket
   })
   let fileUpload;
-  if (await pathExists(file.path)) {
-    fileUpload = createReadStream(file.path).pipe(gridfs.openUploadStream(fileName, {
+  if (await fs.pathExists(file.path)) {
+    fileUpload = fs.createReadStream(file.path).pipe(gridfs.openUploadStream(fileName, {
       chunkSizeBytes: 102400,
       contentType: file.mimetype || "",
       aliases: ["/upload/:bucket"],
@@ -89,7 +83,7 @@ async function uploadFileFS(client: MongoClient, bucket: string, fileName: strin
   })
   let fileUpload;
   const upload = (filePath: string) => {
-    let file = createReadStream(filePath).pipe(gridfs.openUploadStream(fileName, {
+    let file = fs.createReadStream(filePath).pipe(gridfs.openUploadStream(fileName, {
       chunkSizeBytes: 102400,
       metadata: {
         sourceRef: filePath,
@@ -99,16 +93,16 @@ async function uploadFileFS(client: MongoClient, bucket: string, fileName: strin
     return file;
   };
 
-  if (await pathExists(filePath)) {
+  if (await fs.pathExists(filePath)) {
     fileUpload = upload(filePath);
   }
-  else if (await pathExists(filePath.replace('&', '_'))) {
+  else if (await fs.pathExists(filePath.replace('&', '_'))) {
     fileUpload = upload(filePath.replace('&', '_'))
   }
-  else if (await pathExists(filePath.replace('.pdf', '.PDF'))) {
+  else if (await fs.pathExists(filePath.replace('.pdf', '.PDF'))) {
     fileUpload = upload(filePath.replace('&', '_'))
   }
-  else if (await pathExists(filePath.replace('.PDF', '.pdf'))) {
+  else if (await fs.pathExists(filePath.replace('.PDF', '.pdf'))) {
     fileUpload = upload(filePath.replace('&', '_'))
   }
   else {
@@ -125,4 +119,4 @@ async function bulkUpdate(client: MongoClient, { dbName, collectionName }: { dbN
   return { bulk, bulkUpsertAdd }
 }
 
-export default { createOne, deleteOne, updateById, updateOne, findOne, updateMany, findOneById, createOneIfNotExist, findMany, bulkCreateOneIfNotExist, uploadExpressFile, uploadFileFS, bulkUpdate };
+export { createOne, deleteOne, updateById, updateOne, updateMany, findOneById, createOneIfNotExist, bulkCreateOneIfNotExist, uploadExpressFile, uploadFileFS, bulkUpdate };

@@ -54,7 +54,7 @@ router.post('/send-email', async function (req, res) {
     id: body?.userId,
     clientId: body?.clientId,
     redirectUri: body?.redirectUri
-  }).then((res) => {
+  }).then((_res) => {
     return {
       status: 200,
       data: "User created"
@@ -83,14 +83,14 @@ router.post('/send-email', async function (req, res) {
   })
   res.status(response?.status).send(response)
 })
-router.post('/reset-password', async function (req, res) {
+router.post('/request-action', async function (req, res) {
   const body = req?.body;
   const response = await kcAdminClient.users.executeActionsEmail({
     id: body?.userId,
     clientId: body?.clientId,
-    actions: ["UPDATE_PASSWORD"],
+    actions: body?.actions,
     redirectUri: body?.redirectUri
-  }).then((res) => {
+  }).then((_res) => {
     return {
       status: 200,
       data: "Action email success!"

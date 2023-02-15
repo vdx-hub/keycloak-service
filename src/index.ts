@@ -26,6 +26,9 @@ app.use((err: any, _req: any, res: any, _next: any) => {
     error: err,
   });
 });
+app.get('/', (_req, _res) => {
+  _res.send('Hello, service is running')
+})
 app.use('/keycloak', KeycloakRouter)
 app.listen(9000, async () => {
   console.log("Server is up in http://0.0.0.0:9000");
@@ -33,7 +36,7 @@ app.listen(9000, async () => {
 })
 
 function cronjob() {
-  nodecron.schedule('5 * * * *', () => {
-    createUserSSOFromCanBo('CSDL_SSO', 'T_CanBO')
+  nodecron.schedule('*/2 * * * *', () => {
+    createUserSSOFromCanBo('CSDL_SSO', 'T_CanBo')
   });
 }
