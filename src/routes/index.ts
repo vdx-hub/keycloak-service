@@ -32,12 +32,18 @@ router.post('/createUser', async function (req, res) {
       }
     } else if (error.request) {
       // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
       console.error(error.request);
+      return {
+        status: 204,
+        data: "The request was made but no response was received",
+      }
     } else {
       // Something happened in setting up the request that triggered an Error
       console.error('Error', error.message);
+      return {
+        status: 204,
+        data: error.message
+      }
     }
   })
   res.status(response?.status).send(response)
@@ -45,13 +51,13 @@ router.post('/createUser', async function (req, res) {
 router.post('/send-email', async function (req, res) {
   const body = req?.body;
   const response = await kcAdminClient.users.sendVerifyEmail({
-    id: '0dbaca42-ed12-4e3d-a18d-116dbc592506',
-    clientId: 'sso-ceid',
-    redirectUri: 'http://abc.com'
+    id: body?.userId,
+    clientId: body?.clientId,
+    redirectUri: body?.redirectUri
   }).then((res) => {
     return {
       status: 200,
-      // id: res?.id,
+      data: "User created"
     };
   }).catch((error) => {
     if (error.response) {
@@ -61,12 +67,18 @@ router.post('/send-email', async function (req, res) {
       }
     } else if (error.request) {
       // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
       console.error(error.request);
+      return {
+        status: 204,
+        data: "The request was made but no response was received",
+      }
     } else {
       // Something happened in setting up the request that triggered an Error
       console.error('Error', error.message);
+      return {
+        status: 204,
+        data: error.message
+      }
     }
   })
   res.status(response?.status).send(response)
@@ -74,14 +86,14 @@ router.post('/send-email', async function (req, res) {
 router.post('/reset-password', async function (req, res) {
   const body = req?.body;
   const response = await kcAdminClient.users.executeActionsEmail({
-    id: '0dbaca42-ed12-4e3d-a18d-116dbc592506',
-    clientId: 'quantridulieu-ceid-gov-vn',
+    id: body?.userId,
+    clientId: body?.clientId,
     actions: ["UPDATE_PASSWORD"],
-    redirectUri: 'https://quantridulieu.ceid.gov.vn/#/web/csdl_mt/trang_chu'
+    redirectUri: body?.redirectUri
   }).then((res) => {
     return {
       status: 200,
-      // id: res?.id,
+      data: "Action email success!"
     };
   }).catch((error) => {
     if (error.response) {
@@ -91,12 +103,18 @@ router.post('/reset-password', async function (req, res) {
       }
     } else if (error.request) {
       // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
       console.error(error.request);
+      return {
+        status: 204,
+        data: "The request was made but no response was received",
+      }
     } else {
       // Something happened in setting up the request that triggered an Error
       console.error('Error', error.message);
+      return {
+        status: 204,
+        data: error.message
+      }
     }
   })
   res.status(response?.status).send(response)

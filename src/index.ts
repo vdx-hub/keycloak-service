@@ -1,8 +1,9 @@
 import bodyParser from 'body-parser';
 import https from 'https';
 import express from 'express';
-
-import KeycloakRouter from "@routes/keycloak";
+import nodecron from 'node-cron'
+import KeycloakRouter from "@routes/index";
+import { createUserSSOFromCanBo } from 'service/can_bo';
 
 
 https.globalAgent.options.rejectUnauthorized = false;
@@ -28,4 +29,11 @@ app.use((err: any, _req: any, res: any, _next: any) => {
 app.use('/keycloak', KeycloakRouter)
 app.listen(9000, async () => {
   console.log("Server is up in http://0.0.0.0:9000");
+  cronjob()
 })
+
+function cronjob() {
+  nodecron.schedule('5 * * * *', () => {
+    createUserSSOFromCanBo('CSDL_SSO', 'T_CanBO')
+  });
+}
