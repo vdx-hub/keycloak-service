@@ -32,6 +32,7 @@ app.get('/', (_req, _res) => {
 app.use('/keycloak', KeycloakRouter)
 app.listen(9000, async () => {
   console.log("Server is up in http://0.0.0.0:9000");
+  createUserSSOFromCanBo('CSDL_SSO', 'T_CanBo')
   cronjob()
 })
 

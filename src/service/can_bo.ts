@@ -28,7 +28,7 @@ async function createUserSSOFromCanBo(db: string, collection: string) {
         ],
         "enabled": true,
         "emailVerified": true,
-        "firstName": "",
+        "firstName": doc?.HoVaTen,
         "lastName": "",
         "email": String(doc?.DanhBaLienLac?.ThuDienTu)
       }).then(async (res) => {
@@ -47,14 +47,34 @@ async function createUserSSOFromCanBo(db: string, collection: string) {
             },
           })
         }
+
+        await kcAdminClient.users.executeActionsEmail({
+          id: res.id,
+          clientId: 'sso-ceid',
+          actions: ["UPDATE_PASSWORD"],
+          redirectUri: doc?.TaiKhoanDienTu?.redirectUri,
+        }).catch((error) => {
+          if (error.response) {
+            warn({
+              status: error.response.status,
+              data: error.response.data,
+            })
+          } else if (error.request) {
+            // The request was made but no response was received
+            warn(error.request);
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            warn('Error', error.message);
+          }
+        })
+
       }).catch(async (err) => {
+        console.log(err);
         if (doc?._id) {
           await updateById(_client, { dbName: db, collectionName: collection, filterId: String(doc?._id) }, {
             pendingActivateSSOUser: false,
-            userSSO: {
-              username,
-              errorMessage: err?.response?.data?.errorMessage
-            }
+            'userSSO.username': username,
+            'userSSO.errorMessage': err?.response?.data?.errorMessage,
           })
         }
       })
