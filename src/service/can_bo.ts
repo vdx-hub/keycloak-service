@@ -4,7 +4,7 @@ import { _client, _clientGridFS } from "@db/mongodb";
 import { warn } from "console";
 
 async function createUserSSOFromCanBo(db: string, collection: string) {
-  warn('createUserSSOFromCanBo', db, collection, new Date().toLocaleString('vi'))
+  // warn('createUserSSOFromCanBo', db, collection, new Date().toLocaleString('vi'))
   let collectionObj = _client.db(db).collection(collection)
   let cursor = collectionObj.find({
     $and: [
@@ -15,7 +15,7 @@ async function createUserSSOFromCanBo(db: string, collection: string) {
   });
   while (await cursor.hasNext()) {
     let doc = await cursor.next();
-    const username = String(doc?.DanhBaLienLac?.ThuDienTu)?.split('@')?.[0];
+    const username = String(doc?.DanhBaLienLac?.ThuDienTu);
     if (username) {
       await kcAdminClient.users.create({
         "username": username,
@@ -78,9 +78,7 @@ async function createUserSSOFromCanBo(db: string, collection: string) {
           })
         }
       })
-
     }
-
   }
 }
 

@@ -6,7 +6,7 @@
     "allowJs": true,
     "outDir": "dist",
     "esModuleInterop": true,
-    "strict": true,
+    "strict": false,
     "strictNullChecks": true,
     "noUnusedLocals": false,
     "noUnusedParameters": true,
